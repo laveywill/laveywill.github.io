@@ -616,7 +616,7 @@ window.Quarto = {
 </div>
 </div>
 <p>This data table view shows the mean, median, min, and max of quantitative columns in the dataset, barring those relating to “Delta”. This initial exploration of the data reveal some clear differences in the measurements taken on the penguins across groups. Most notably, penguins of the Gentoo species are on average 1300g heavier than any of the other species.</p>
-<div id="cell-10" class="cell" data-execution_count="142">
+<div id="cell-10" class="cell" data-execution_count="143">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize <span class="op">=</span> (<span class="dv">8</span>, <span class="fl">3.5</span>))</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>p1 <span class="op">=</span> sns.scatterplot(train, x <span class="op">=</span> <span class="st">"Flipper Length (mm)"</span>, y <span class="op">=</span> <span class="st">"Body Mass (g)"</span>, hue <span class="op">=</span> <span class="st">"Species"</span>, style <span class="op">=</span> <span class="st">"Species"</span>, ax <span class="op">=</span> ax[<span class="dv">0</span>]).set_title(<span class="st">"Flipper Length and Body Mass by Species"</span>)</span>
@@ -631,7 +631,9 @@ window.Quarto = {
 </div>
 <p>These two graphics help to visualize potential relationships present in the data. We do not see a clear separation of the species groups while viewing Body Mass and Flipper Length. The histogram of the species uncovers the distribution of the different species in the dataset. There are more Adelia samples in the training data than any other species.</p>
 <p>From the exploratory analysis above, we can move forward to the model selection process. Below contains methodology to train and score Logistic Regression and Support Vector Machines models via cross-validation with most combinations of quantitative and qualitative predictor variables.</p>
-<div id="cell-12" class="cell">
+<section id="model-and-feature-selection" class="level2">
+<h2 class="anchored" data-anchor-id="model-and-feature-selection">Model and Feature Selection</h2>
+<div id="cell-13" class="cell" data-execution_count="144">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> itertools <span class="im">import</span> combinations</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.svm <span class="im">import</span> SVC</span>
@@ -664,7 +666,7 @@ window.Quarto = {
 <span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>      best_SVM_cols <span class="op">=</span> cols</span>
 <span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>      best_SVM_score <span class="op">=</span> SVM_score</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-13" class="cell" data-execution_count="89">
+<div id="cell-14" class="cell" data-execution_count="145">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Best LR Score: "</span>, best_LR_score,</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>      <span class="st">"</span><span class="ch">\n</span><span class="st"> Best SVM Score: "</span>, best_SVM_score)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -672,14 +674,14 @@ window.Quarto = {
  Best SVM Score:  0.890573152337858</code></pre>
 </div>
 </div>
-<div id="cell-14" class="cell" data-execution_count="91">
+<div id="cell-15" class="cell" data-execution_count="146">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Best LR Columns: "</span>, best_LR_cols)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Best LR Columns:  ['Island_Dream', 'Culmen Length (mm)', 'Culmen Depth (mm)']</code></pre>
 </div>
 </div>
 <p>From this model selection process, we can conclude that the logistic regression model process is favorable for this prediction task as it boasts a mean accuracy over 5 cross-validation folds of <span class="math inline">\(0.9922\)</span>. We will move forward with the best columns associated with the greater accuracy of the logistic regression model, being ‘Island’, ‘Culmen Length’, ‘Culmen Depth’. We will use all three variables derived from island association.</p>
-<div id="cell-16" class="cell" data-execution_count="92">
+<div id="cell-17" class="cell" data-execution_count="147">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>selected_cols <span class="op">=</span> [<span class="st">"Culmen Length (mm)"</span>, </span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"Culmen Depth (mm)"</span>,</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"Island_Dream"</span>, </span>
@@ -690,24 +692,27 @@ window.Quarto = {
 <span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>LR.fit(X_train[selected_cols], y_train)</span>
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> cross_val_score(LR, X_train[selected_cols], y_train, cv <span class="op">=</span> <span class="dv">5</span>)</span>
 <span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>scores</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="92">
+<div class="cell-output cell-output-display" data-execution_count="147">
 <pre><code>array([0.981, 1.   , 1.   , 1.   , 1.   ])</code></pre>
 </div>
 </div>
 <p>Using all selected features, including island association variables, the Logistic Regression model nearly boasts perfect accuracy on the training data sample. Let’s see how it performs on the testing data.</p>
-<div id="cell-18" class="cell" data-execution_count="122">
+<div id="cell-19" class="cell" data-execution_count="148">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>test_url <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/PhilChodrow/ml-notes/main/data/palmer-penguins/test.csv"</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>test <span class="op">=</span> pd.read_csv(test_url)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>test[<span class="st">"Species"</span>] <span class="op">=</span> test[<span class="st">"Species"</span>].<span class="bu">str</span>.split().<span class="bu">str</span>.get(<span class="dv">0</span>)</span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>X_test, y_test <span class="op">=</span> prepare_data(test)</span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>LR.score(X_test[selected_cols], y_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="122">
+<div class="cell-output cell-output-display" data-execution_count="148">
 <pre><code>1.0</code></pre>
 </div>
 </div>
 <p>Wow! A perfect score! Exquisite modeling! Let’s visualize our model findings.</p>
-<div id="cell-20" class="cell" data-execution_count="123">
+</section>
+<section id="final-model-visualizations" class="level2">
+<h2 class="anchored" data-anchor-id="final-model-visualizations">Final Model Visualizations</h2>
+<div id="cell-22" class="cell" data-execution_count="149">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.patches <span class="im">import</span> Patch</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_regions(model, X, y):</span>
@@ -760,7 +765,7 @@ window.Quarto = {
 <span id="cb16-50"><a href="#cb16-50" aria-hidden="true" tabindex="-1"></a>      </span>
 <span id="cb16-51"><a href="#cb16-51" aria-hidden="true" tabindex="-1"></a>      plt.tight_layout()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-21" class="cell" data-execution_count="38">
+<div id="cell-23" class="cell" data-execution_count="150">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>plot_regions(LR, X_train[selected_cols], y_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -771,19 +776,23 @@ window.Quarto = {
 </div>
 </div>
 <p>The plot_regions() function provided to us allows us to visualize the model’s decisions based on the selected features. The view is faceted by the dummy variables previously created for the Island column.</p>
-<div id="cell-23" class="cell" data-execution_count="61">
+</section>
+<section id="confusion-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="confusion-matrix">Confusion Matrix</h2>
+<div id="cell-26" class="cell" data-execution_count="151">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> confusion_matrix</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>y_test_pred <span class="op">=</span> LR.predict(X_test[selected_cols])</span>
 <span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>C <span class="op">=</span> confusion_matrix(y_test, y_test_pred)</span>
 <span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>C</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="61">
+<div class="cell-output cell-output-display" data-execution_count="151">
 <pre><code>array([[31,  0,  0],
        [ 0, 11,  0],
        [ 0,  0, 26]])</code></pre>
 </div>
 </div>
 <p>This confusion matrix allows us to view in which accuracy categories our model excels and which it underperforms. Fortunately, the model and feature selection processes result in perfect accuracy, in which the model does not make any wrong species predictions for the test data.</p>
+</section>
 </section>
 <section id="discussion" class="level1">
 <h1>Discussion</h1>
